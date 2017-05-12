@@ -6,7 +6,12 @@ import qualified Data.Map as Map
 import Debug.Trace
 import DataStructure
 
-
+----------------------------------------------------------------
+--          IDB handling
+----------------------------------------------------------------
+getNames :: [[String]] -> [String]
+getNames [] = []
+getNames ((x:_):xss) = x : getNames xss
 ----------------------------------------------------------------
 --          EDB handling
 ----------------------------------------------------------------
@@ -33,6 +38,17 @@ mergeEDB (EDB x) (EDB (y:ys)) =
   if inEDB y (EDB x)
     then mergeEDB (EDB x) (EDB ys)
     else mergeEDB (EDB (y:x)) (EDB ys)
+
+areNeg :: [[String]] -> Bool
+areNeg [] = True
+areNeg ((x:xs):xss) =
+  isNeg x /= 1 && areNeg xss
+
+positive :: MAPPING -> Bool
+positive (MAPPING []) = True
+positive (MAPPING ((head, body):xs)) =
+  areNeg body && positive (MAPPING xs)
+
 ----------------------------------------------------------------
 --          MAPPING handling
 ----------------------------------------------------------------
@@ -40,6 +56,26 @@ mergeEDB (EDB x) (EDB (y:ys)) =
 containsNEG :: [[String]] -> Bool
 containsNEG [] = False
 containsNEG ((head:body):xs) = (isNeg head == 1) || containsNEG xs
+
+
+sliceMapping_ :: Int -> MAPPING -> Map String Int -> [([String], [[String]])]
+sliceMapping_ _ (MAPPING []) _ = []
+sliceMapping_ i (MAPPING (((head:vars), body):xs)) map =
+  if get map head == i
+    then ((head:vars), body) : sliceMapping_ i (MAPPING xs) map
+    else sliceMapping_ i (MAPPING xs) map
+
+
+-- MAPPING [([head, vars], [[body, vars], [body, vars], ..)...]
+sliceMapping ::  Int -> Int -> MAPPING -> Map String Int -> [MAPPING]
+sliceMapping size i mapping map = 
+  if i > size
+    then 
+      []
+    else
+      (MAPPING $sliceMapping_ i mapping map) : (sliceMapping size (i+1) mapping map)
+
+
 ----------------------------------------------------------------
 --          Evaluating a Positive Datalog Program
 ----------------------------------------------------------------
@@ -126,14 +162,25 @@ forward_positive map (MAPPING ((h, body):ys)) (EDB edb) =
 ------------------------------------
 ------------------------------------
 
-forward_chaining :: MAPPING -> EDB -> Int -> EDB
-forward_chaining (MAPPING mapping) (EDB edb) = do
+forward_chaining__ :: MAPPING -> EDB -> EDB
+forward_chaining__ (MAPPING mapping) (EDB edb) = do
   let fwd = forward_positive initMapVariables (MAPPING mapping) (EDB edb)
-  let (EDB edbs) = setEDBs fwd (MAPPING mapping) (EDB edb)
+  let (EDB edbs) = mergeEDB (EDB edb) $setEDBs fwd (MAPPING mapping) (EDB edb)
   if (length edb) == (length edbs)
     then (EDB edbs)
-    else forward_chaining (MAPPING mapping) (mergeEDB (EDB edb) (EDB edbs))
+    else (forward_chaining__ (MAPPING mapping)  (EDB edbs))
   
 ------------------------------------
+
+forward_chaining_ :: [MAPPING] -> EDB -> EDB
+forward_chaining_ [] edb = edb
+forward_chaining_ (mapping:mappings) edb = trace("forward chaining" ++ show  mapping)(forward_chaining_ mappings (forward_chaining__ mapping edb))
+
+forward_chaining :: Int -> MAPPING -> EDB -> Map String Int -> EDB
+forward_chaining size mapping edb stratif =
+  trace("#" ++ show (sliceMapping size 1 mapping stratif) ++ "#")
+  forward_chaining_ ((sliceMapping size 1 mapping stratif)) edb
+
+
 
 

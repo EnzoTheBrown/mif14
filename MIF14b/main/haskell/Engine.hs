@@ -33,10 +33,10 @@ launch x = do
     let strata = initMap
     print edb
     print mapping
-    print $ stratification ["link", "metro", "reachable", "unreachable"] mapping 
-      $ initStrata strata (edb_relations ++ idb_relations) 
+    print (getNames idb_relations)
+    let stratif = stratification (getNames idb_relations) mapping $ initStrata strata (edb_relations ++ idb_relations) 
     print "-- EDB --"
-    print $ forward_chaining mapping edb
+    print $ forward_chaining (length idb_relations) mapping edb stratif
     -- print (mergeEDB (setEDBs (forward initMapVariables mapping edb) mapping))
     hClose handle 
 
@@ -67,11 +67,11 @@ stratified x = do
     print mapping
     print (edb_relations ++ idb_relations)
     print $ stratification ["p", "q", "r", "s", "t"] mapping $ initStrata strata (edb_relations ++ idb_relations)
-    print $ forward_chaining mapping edb
-
+    print $ positive mapping
 
 main = do
     launch "../ressources/sample2.txt"
     launch "../ressources/sample3.txt"
     launch "../ressources/sample4.txt"
     launch "../ressources/sample1.txt"
+
