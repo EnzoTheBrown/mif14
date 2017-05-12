@@ -1,0 +1,16 @@
+EDB
+q(a)
+s(b)
+t(a)
+
+IDB
+q($x)
+s($x)
+t($x)
+
+MAPPING
+NEG q($x), r($x) -> p($x).
+NEG t($x), q($x) -> p($x).
+s($x), NEG t($x) -> q($x).
+t($x) -> r($x).
+

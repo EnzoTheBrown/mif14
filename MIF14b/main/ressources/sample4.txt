@@ -1,0 +1,11 @@
+EDB
+q(a)
+s(b)
+t(a)
+IDB
+q($x)
+s($x)
+t($x)
+MAPPING
+q($x), t($x) -> s($x).
+s($x), NEGq($x) -> t($x).
