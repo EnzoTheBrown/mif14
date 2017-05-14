@@ -1,5 +1,5 @@
 module Evaluation where
-import Parse
+import Parser.Parse
 import MyMap
 import Data.Map (Map)
 import qualified Data.Map as Map
@@ -9,22 +9,30 @@ import DataStructure
 ----------------------------------------------------------------
 --          IDB handling
 ----------------------------------------------------------------
+
+-- for the stratification, give all the predicat names
 getNames :: [[String]] -> [String]
 getNames [] = []
 getNames ((x:_):xss) = x : getNames xss
 ----------------------------------------------------------------
 --          EDB handling
 ----------------------------------------------------------------
+
+-- compare 2 predicats
 samePredicat :: [String] -> [String] -> Bool
 samePredicat [] [] = True
 samePredicat [] _ = False
 samePredicat _ [] = False
 samePredicat (x:xs) (y:ys) = (x == y) && samePredicat xs ys
 
+
+-- check if a predicat is in the given EBD
 inEDB :: [String] -> EDB -> Bool
 inEDB _ (EDB []) = False
 inEDB x (EDB (y:ys)) = samePredicat x y || inEDB x (EDB ys)
 
+
+-- check if a a set of predicat are in the EDB
 inEDBs :: [[String]] -> EDB -> Bool
 inEDBs [] _ = True
 inEDBs ((head:body):xs) edb =
@@ -32,6 +40,8 @@ inEDBs ((head:body):xs) edb =
     then not (inEDB ((litteral head):body) edb) && inEDBs xs edb
     else (inEDB (head:body) edb) && inEDBs xs edb
 
+
+-- distinctly merge 2 edb
 mergeEDB :: EDB -> EDB -> EDB
 mergeEDB edb (EDB []) = edb
 mergeEDB (EDB x) (EDB (y:ys)) =
@@ -39,11 +49,14 @@ mergeEDB (EDB x) (EDB (y:ys)) =
     then mergeEDB (EDB x) (EDB ys)
     else mergeEDB (EDB (y:x)) (EDB ys)
 
+
+-- check if the body of a rule contains NEG or not
 areNeg :: [[String]] -> Bool
 areNeg [] = True
 areNeg ((x:xs):xss) =
   isNeg x /= 1 && areNeg xss
 
+-- check if a datalog program is positiv or not
 positive :: MAPPING -> Bool
 positive (MAPPING []) = True
 positive (MAPPING ((head, body):xs)) =
@@ -162,24 +175,23 @@ forward_positive map (MAPPING ((h, body):ys)) (EDB edb) =
 ------------------------------------
 ------------------------------------
 
-forward_chaining__ :: MAPPING -> EDB -> EDB
-forward_chaining__ (MAPPING mapping) (EDB edb) = do
+slice_evaluation :: MAPPING -> EDB -> EDB
+slice_evaluation (MAPPING mapping) (EDB edb) = do
   let fwd = forward_positive initMapVariables (MAPPING mapping) (EDB edb)
   let (EDB edbs) = mergeEDB (EDB edb) $setEDBs fwd (MAPPING mapping) (EDB edb)
   if (length edb) == (length edbs)
     then (EDB edbs)
-    else (forward_chaining__ (MAPPING mapping)  (EDB edbs))
+    else (slice_evaluation (MAPPING mapping)  (EDB edbs))
   
 ------------------------------------
 
-forward_chaining_ :: [MAPPING] -> EDB -> EDB
-forward_chaining_ [] edb = edb
-forward_chaining_ (mapping:mappings) edb = trace("forward chaining" ++ show  mapping)(forward_chaining_ mappings (forward_chaining__ mapping edb))
+stratified_evaluation_ :: [MAPPING] -> EDB -> EDB
+stratified_evaluation_ [] edb = edb
+stratified_evaluation_ (mapping:mappings) edb = (stratified_evaluation_ mappings (slice_evaluation mapping edb))
 
-forward_chaining :: Int -> MAPPING -> EDB -> Map String Int -> EDB
-forward_chaining size mapping edb stratif =
-  trace("#" ++ show (sliceMapping size 1 mapping stratif) ++ "#")
-  forward_chaining_ ((sliceMapping size 1 mapping stratif)) edb
+stratified_evaluation :: Int -> MAPPING -> EDB -> Map String Int -> EDB
+stratified_evaluation size mapping edb stratif =
+  stratified_evaluation_ ((sliceMapping size 1 mapping stratif)) edb
 
 
 

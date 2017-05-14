@@ -2,19 +2,30 @@ module Stratification where
 import MyMap
 import Data.Map (Map)
 import qualified Data.Map as Map
-import Parse
+import Parser.Parse
 import DataStructure
 ---------------------------------------------------------------
 --          stratification
 ---------------------------------------------------------------
 
--- a stratum exceeds the predicate count in P
+-- strataCorrect
+-- args    : 
+--         : MapStringInt  map predicat:value
+--         : Int the maximum value of a statum
+--         : the list of the different predicat
+-- returns : True if each stratum are lesser than the number of predicats
+--         : False otherwise
 strataCorrect :: Map String Int -> Int -> [String] -> Bool
 strataCorrect _ _ [] = True 
 strataCorrect map n (x:xs) = get map x <= n && strataCorrect map n xs
 
--- for all predicates p in P do
---   stratum[p] ← 1
+-- initStrata
+-- args    : 
+--         : Map String Int a given map to fill with the key:value
+--         : [[String]] the EDB content
+--         : 
+-- returns : a map with 1 as a value for each predicat 
+--         : 
 initStrata :: Map String Int -> [[String]] -> Map String Int
 initStrata map [] = map
 initStrata map (x:xs) = set (initStrata map xs) (head x) 1
