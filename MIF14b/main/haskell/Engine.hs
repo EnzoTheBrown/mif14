@@ -1,5 +1,5 @@
 module Engine where
-import Parser.Parse
+import Parse
 import System.IO           
 import MyMap
 import Data.Map (Map)
@@ -8,8 +8,8 @@ import Debug.Trace
 import Stratification
 import DataStructure
 import Evaluation
-import Parser.Stringify
-
+--import Stringify
+import Data2SQL
 
 launch x = do
     print ("###############  " ++ x ++ "  ###############")
@@ -34,12 +34,13 @@ launch x = do
     let start = (START edb idb mapping)
     let strata = initMap
     print edb
+    print idb
     print mapping
     print (getNames idb_relations)
     let stratif = stratification (getNames idb_relations) mapping $ initStrata strata (edb_relations ++ idb_relations) 
     print "-- EDB --"
     let (EDB _edb) = stratified_evaluation (length idb_relations) mapping edb stratif
-    putStrLn $stringify _edb
+    print _edb
     hClose handle 
     print "###########################################################"
 

@@ -1,5 +1,5 @@
 module Evaluation where
-import Parser.Parse
+import Parse
 import MyMap
 import Data.Map (Map)
 import qualified Data.Map as Map
@@ -61,6 +61,19 @@ positive :: MAPPING -> Bool
 positive (MAPPING []) = True
 positive (MAPPING ((head, body):xs)) =
   areNeg body && positive (MAPPING xs)
+
+---------------------------------------------------------------
+
+recursive_ :: [String] -> [[String]] -> Bool
+recursive_ _ [] = False
+recursive_ (x:xs) ((y:ys):yss) = 
+  (litteral x)== (litteral y) || recursive_ (x:xs) yss
+
+
+recursive :: MAPPING -> Bool
+recursive (MAPPING []) = False
+recursive (MAPPING ((head, body):xs))=
+  (recursive_ head body) || recursive (MAPPING xs)
 
 ----------------------------------------------------------------
 --          MAPPING handling

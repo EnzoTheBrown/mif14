@@ -2,7 +2,7 @@ module Stratification where
 import MyMap
 import Data.Map (Map)
 import qualified Data.Map as Map
-import Parser.Parse
+import Parse
 import DataStructure
 ---------------------------------------------------------------
 --          stratification
