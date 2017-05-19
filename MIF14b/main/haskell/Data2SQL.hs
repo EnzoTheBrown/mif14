@@ -106,7 +106,7 @@ from ((a, b): abs) = litteral(a) ++ " AS " ++ litteral b ++ ", " ++ from abs
 
 wherePositive_ :: [(String, String, String, [String])]
        -> String
-wherePositive_ (_:[]) = "1 = 1"
+wherePositive_ (_:[]) = ""
 wherePositive_ ((a, b, c, _):(d, e, f, g):xs) =
   litteral(b) ++ "." ++ c ++ " = " ++ litteral(e) ++ "." ++ f ++ " AND " ++ wherePositive_ ((d,e,f, g):xs)
 
@@ -127,63 +127,6 @@ createViewsNonRecursivePositive (MAPPING []) = ""
 createViewsNonRecursivePositive (MAPPING (x:xs)) = createViewNonRecursivePositive x ++ "\n" ++ createViewsNonRecursivePositive (MAPPING xs)
 
 -----------------------------------------
-
-getColumnVariables :: String
-                  -> [(String, String, String, [String])]
-		  -> String
-getColumnVariables _ [] = ""
-getColumnVariables asName ((_,b,c,_):xs) = 
-  if b == asName
-    then c
-    else getColumnVariables asName xs
-
-
-getOtherVariables :: String
-                  -> String
-                  -> [(String, String, String, [String])]
-		  -> String
-getOtherVariables _ "" _ = ""
-getOtherVariables _ _ [] = ""
-getOtherVariables asName column ((_, b, c, _):xs) =
-  if b /= asName
-    then "AND (" ++ asName ++"." ++ column ++ "=" ++ b ++"." ++ c ++  ")"
-    else getOtherVariables asName column xs
-
-
-
------------------------------------------
-
-whereNegative_ :: [(String, String, String, [String])]
-       -> map String [(String, String, String, [String])]
-       -> String
-       -> String 
-whereNegative_ (_:[]) map _ = "1 = 1"
-whereNegative_ ((a, b, c,_):(d, e, f,g):xs) map var =
-  if isNeg b == 1 || isNeg e == 1
-    then "((" ++ litteral b ++ "." ++ c ++ " <> " ++ litteral e ++ "." ++ "" ++ ")"++ getOtherVariables b (getColumnVariables b (getSQLVariable map var)) (getSQLVariable map var) ++ ")" ++ " AND " ++ (whereNegative_ ((d,e,f,g):xs))
-    else "(" ++ b ++ "." ++ c ++ " = " ++ e ++ "." ++ f ++ ")" ++ ")" ++ " AND " ++ whereNegative_ ((d,e,f,g):xs)
-
-
-whereNegative :: [(String, [(String, String, String, [String])])]
-       -> String
-whereNegative [] = "1 = 1\n"
-whereNegative ((_, ys):xs) = 
-  whereNegative_ ys ++ " AND " ++ whereNegative xs
-
-
-createViewNonRecursiveNegative ((h: vars), body) = do
-  let m = (initSQLHash body 1 initMapSQL)
-  if True
-    then ("CREATE OR REPLACE VIEW " ++ h ++ " AS\nSELECT " ++ select vars m ++ "\nFROM " ++ from(from_ (Map.toList m)) ++ "\nWHERE " ++ whereNegative (Map.toList m) ++ ");\n" ++ (show m))
-    else ""
-
-createViewsNonRecursiveNegative (MAPPING []) = ""
-createViewsNonRecursiveNegative (MAPPING (x:xs)) = 
-  createViewNonRecursiveNegative x ++ "\n" ++ createViewsNonRecursiveNegative (MAPPING xs)
-
------------------------------------------
-
-
 
 
 
