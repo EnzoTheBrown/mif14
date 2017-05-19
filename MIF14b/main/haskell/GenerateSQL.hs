@@ -5,7 +5,7 @@ import Data.Map (Map)
 import qualified Data.Map as Map
 import Debug.Trace
 import Parse
-import Data.Text
+import Text.Regex
 
 -----------------------------------------
 
@@ -161,7 +161,7 @@ createViewSqlRecursive (hh, hbody) (h, body) = do
   let vars = getVariables body []
   let hvars = getVariables hbody []
   if True
-    then trace(show m) createView (h, body) ++ "\n" ++  with (h!!0) ++ "\n" ++ select (hh!!0) (removeFirst 1 hh) hm ++ " " ++ from (getAsName hbody 1) hm ++ "\nUNION ALL\n(" ++ select (h!!0) (removeFirst 1 h)  m ++"\n  " ++from (getAsName body 1) m ++ "\n" ++ whereSql vars m ++ "))\n"
+    then createView (h, body) ++ "\n" ++ subRegex (mkRegex (h!!0)) (with (h!!0) ++ "\n" ++ select (hh!!0) (removeFirst 1 hh) hm ++ " " ++ from (getAsName hbody 1) hm ++ "\nUNION ALL\n(" ++ select (h!!0) (removeFirst 1 h)  m ++"\n  " ++from (getAsName body 1) m ++ "\n" ++ whereSql vars m ++ "))\n") ("rec_" ++ (h!!0))
     else ""
 
 createViewSqlRecursivePositive :: ([String], [[String]]) -> ([String], [[String]]) -> String
