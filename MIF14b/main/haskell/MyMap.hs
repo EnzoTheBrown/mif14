@@ -36,17 +36,35 @@ setVariable map name value = Map.insert name value map
 --------------------------------------------
 
 --                        tableName  asName   column
-initMapSQL :: Map String [(String, String, String)]
+initMapSQL :: Map String [(String, String, String, [String])]
 initMapSQL = Map.fromList []
 
-getSQLVariable :: Map String [(String, String, String)] -> String -> [(String, String, String)]
+getSQLVariable :: Map String [(String, String, String, [String])] -> String -> [(String, String, String, [String])]
 getSQLVariable map name = case Map.lookup name map of
     Nothing -> []
     Just value -> value
 
-setSQLVariable :: Map String [(String, String, String)] 
+setSQLVariable :: Map String [(String, String, String, [String])] 
                -> String 
-	       -> (String, String, String) 
-	       -> Map String [(String, String, String)]
+	       -> (String, String, String, [String]) 
+	       -> Map String [(String, String, String, [String])]
 setSQLVariable map name value = Map.insert name (value : (getSQLVariable map name)) map
+
+--------------------------------------------
+
+initMapNegated :: Map String Int
+initMapNegated = Map.fromList []
+
+getNegated :: Map String Int -> String -> Int
+getNegated map name = case Map.lookup name map of
+    Nothing -> -1
+    Just value -> value
+
+setNegated :: Map String Int -> String -> Int -> Map String Int
+setNegated map name value = Map.insert name value map
+
+
+
+
+
 

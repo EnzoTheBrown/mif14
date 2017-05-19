@@ -1,0 +1,9 @@
+EDB
+q(a)
+s(b)
+t(a)
+p(b)
+q(b)
+t(a)
+IDB
+MAPPING
