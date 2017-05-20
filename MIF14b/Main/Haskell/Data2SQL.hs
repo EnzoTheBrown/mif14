@@ -1,7 +1,7 @@
-module Data2SQL where
-import GenerateSQL
-import Evaluation 
-import DataStructure
+module Main.Haskell.Data2SQL where
+import Main.Haskell.GenerateSQL
+import Main.Haskell.Evaluation 
+import Main.Haskell.DataStructure
 
 
 commit :: String

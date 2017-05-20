@@ -1,4 +1,4 @@
-module Parse where
+module Main.Haskell.Parse where
 import Data.List
 import Text.Regex.Posix    
 import Text.Regex.Base

@@ -1,4 +1,4 @@
-module Stringify where
+module Main.Haskell.Stringify where
 
 
 toStringEDB_ :: [String]

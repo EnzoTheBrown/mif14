@@ -1,15 +1,15 @@
-module Engine where
-import Parse
+module Main.Haskell.Engine where
+import Main.Haskell.Parse
 import System.IO           
-import MyMap
+import Main.Haskell.MyMap
 import Data.Map (Map)
 import qualified Data.Map as Map
 import Debug.Trace
-import Stratification
-import DataStructure
-import Evaluation
-import Stringify
-import Data2SQL
+import Main.Haskell.Stratification
+import Main.Haskell.DataStructure
+import Main.Haskell.Evaluation
+import Main.Haskell.Stringify
+import Main.Haskell.Data2SQL
 
 execStratifiedEvaluation contents = do
     let starts = start $removeBlanks contents
@@ -67,10 +67,10 @@ launch x = do
     print "###########################################################"
 
 
-main = do
-    launch "../ressources/sample1.txt"
-    launch "../ressources/sample3.txt"
-    launch "../ressources/sample4.txt"
-    launch "../ressources/sample2.txt"
-    launch "../ressources/sample5.txt"
+mainEngine = do
+    launch "Main/ressources/sample1.txt"
+    launch "Main/ressources/sample3.txt"
+    launch "Main/ressources/sample4.txt"
+    launch "Main/ressources/sample2.txt"
+    launch "Main/ressources/sample5.txt"
 

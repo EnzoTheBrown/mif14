@@ -1,10 +1,10 @@
-module Evaluation where
-import Parse
-import MyMap
+module Main.Haskell.Evaluation where
+import Main.Haskell.Parse
+import Main.Haskell.MyMap
 import Data.Map (Map)
 import qualified Data.Map as Map
 import Debug.Trace
-import DataStructure
+import Main.Haskell.DataStructure
 
 ----------------------------------------------------------------
 --          IDB handling

@@ -1,12 +1,12 @@
-module GenerateSQL where
-import DataStructure
-import MyMap
+module Main.Haskell.GenerateSQL where
+import Main.Haskell.DataStructure
+import Main.Haskell.MyMap
 import Data.Map (Map)
 import qualified Data.Map as Map
 import Debug.Trace
-import Parse
+import Main.Haskell.Parse
 import Text.Regex
-import Evaluation
+import Main.Haskell.Evaluation
 
 
 -----------------------------------------

@@ -1,13 +1,13 @@
-module UnitTest where
+module Main.Haskell.UnitTest where
 import System.IO
-import DataStructure
-import Parse
+import Main.Haskell.DataStructure
+import Main.Haskell.Parse
 import Test.HUnit
-import Engine
+import Main.Haskell.Engine
 import Data.Map (Map)
 import qualified Data.Map as Map
-import MyMap
-import Evaluation
+import Main.Haskell.MyMap
+import Main.Haskell.Evaluation
 import Debug.Trace
 
 

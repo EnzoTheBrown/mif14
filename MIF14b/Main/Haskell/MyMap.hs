@@ -1,4 +1,4 @@
-module MyMap where
+module Main.Haskell.MyMap where
 import Data.Map (Map)
 import qualified Data.Map as Map
 

@@ -1,9 +1,9 @@
-module Stratification where
-import MyMap
+module Main.Haskell.Stratification where
+import Main.Haskell.MyMap
 import Data.Map (Map)
 import qualified Data.Map as Map
-import Parse
-import DataStructure
+import Main.Haskell.Parse
+import Main.Haskell.DataStructure
 ---------------------------------------------------------------
 --          stratification
 ---------------------------------------------------------------
