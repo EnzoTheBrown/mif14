@@ -6,6 +6,8 @@ import qualified Data.Map as Map
 import Debug.Trace
 import Parse
 import Text.Regex
+import Evaluation
+
 
 -----------------------------------------
 
@@ -66,10 +68,24 @@ createTable_ (x:[]) i =
 createTable_ (x:xs) i = 
   "   " ++ (show i) ++ " VARCHAR(150),\n" ++ (createTable_ xs (i+1))
 
-createTable :: IDB -> String
-createTable (IDB []) = ""
-createTable (IDB ((x:xs):xss)) = 
-  "CREATE TABLE " ++ x ++ "(\n" ++ (createTable_ xs 1) ++ createTable (IDB xss)
+createTable :: EDB -> String
+createTable (EDB []) = ""
+createTable (EDB ((x:xs):xss)) = 
+  "CREATE TABLE " ++ x ++ "(\n" ++ (createTable_ xs 1) ++ createTable (EDB xss) ++ ";"
+
+nameInEDB :: String -> EDB -> Bool
+nameInEDB  _ (EDB []) = False
+nameInEDB x (EDB (y:ys)) =
+  if x == (y!!0)
+    then True
+    else nameInEDB x (EDB ys)
+
+unifyEDB :: EDB -> EDB -> EDB
+unifyEDB (EDB []) edb = edb
+unifyEDB (EDB (y:ys)) edb = 
+  if nameInEDB (y!!0) edb
+    then unifyEDB (EDB ys) edb
+    else unifyEDB (EDB ys) (mergeEDB (EDB [y]) edb)
 
 
 -- create the Insert script for the EDBs --
