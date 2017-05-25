@@ -1,0 +1,8 @@
+project: MIF14
+author: Enzo Lebrun
+mail: enzo.the@gmail.com
+
+pour lancer le projet:
+
+   docker build . -t my-app
+   docker run my-app
